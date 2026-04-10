@@ -93,16 +93,35 @@ def find_question_sections(answer_keys):
                 sub_choices[JAMO_LABELS[sub_idx]] = text
                 sub_idx += 1
         elif not is_bold and q_text:
-            fc = parse_final_choice(text)
-            if fc:
-                # 다중선택 최종선택지 ① ㄱ,ㄴ 형식
-                num, jamos = fc
-                final_map[str(num)] = ",".join(jamos) if jamos else text
-            elif not CIRC_PATTERN.match(text):
-                # 일반 선택지 (순서대로 1~5)
-                n = str(len(choices) + 1)
-                if len(choices) < 5:
-                    choices[n] = text
+            # 한 요소에 ①②③④⑤ 여러 개가 있으면 분리 처리
+            circ_count = len(re.findall(r"[①②③④⑤]", text))
+            if circ_count > 1:
+                # "① ㄱ ㄷ, ② ㄱ ㄹ, ③ ..." 형태 분리
+                segments = re.split(r"([①②③④⑤])", text)
+                # segments: ['', '①', ' ㄱ ㄷ, ', '②', ' ㄱ ㄹ, ', ...]
+                i = 1
+                while i + 1 < len(segments):
+                    seg_text = segments[i] + segments[i + 1]
+                    fc = parse_final_choice(seg_text)
+                    if fc:
+                        num, jamos = fc
+                        final_map[str(num)] = ",".join(jamos) if jamos else segments[i + 1].strip()
+                    elif not CIRC_PATTERN.match(seg_text):
+                        n = str(len(choices) + 1)
+                        if len(choices) < 5:
+                            choices[n] = seg_text.strip()
+                    i += 2
+            else:
+                fc = parse_final_choice(text)
+                if fc:
+                    # 다중선택 최종선택지 ① ㄱ,ㄴ 형식
+                    num, jamos = fc
+                    final_map[str(num)] = ",".join(jamos) if jamos else text
+                elif not CIRC_PATTERN.match(text):
+                    # 일반 선택지 (순서대로 1~5)
+                    n = str(len(choices) + 1)
+                    if len(choices) < 5:
+                        choices[n] = text
 
     flush()
     return all_items
