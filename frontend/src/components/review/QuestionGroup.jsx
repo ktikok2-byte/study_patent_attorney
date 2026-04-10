@@ -1,5 +1,7 @@
 import { Q_TYPE_LABELS } from '../../lib/constants'
 
+const CIRC = ['', '①', '②', '③', '④', '⑤']
+
 const s = {
   card: { background: '#fff', borderRadius: 10, padding: '16px', boxShadow: '0 1px 6px rgba(0,0,0,0.06)', marginBottom: 12 },
   header: { display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10, alignItems: 'center' },
@@ -10,6 +12,11 @@ const s = {
   choiceText: { fontSize: 13, color: '#374151', flex: 1, lineHeight: 1.5 },
   ox: (v) => ({ display: 'inline-block', width: 22, height: 22, lineHeight: '22px', textAlign: 'center', borderRadius: 4, fontSize: 11, fontWeight: 700, flexShrink: 0, background: v === 'O' ? '#dcfce7' : '#fee2e2', color: v === 'O' ? '#16a34a' : '#dc2626' }),
   ansLine: { fontSize: 12, color: '#2563eb', fontWeight: 600, marginTop: 8, padding: '4px 8px', background: '#eff6ff', borderRadius: 6, display: 'inline-block' },
+  divider: { borderTop: '1px solid #e2e8f0', margin: '10px 0 8px' },
+  fcTitle: { fontSize: 11, color: '#64748b', fontWeight: 600, marginBottom: 4 },
+  fcRow: (isAns) => ({ display: 'flex', gap: 6, alignItems: 'center', padding: '3px 6px', borderRadius: 4, marginBottom: 2, background: isAns ? '#dbeafe' : 'transparent', fontSize: 12 }),
+  fcLabel: { fontWeight: 700, color: '#374151', minWidth: 24 },
+  fcText: (isAns) => ({ color: isAns ? '#1d4ed8' : '#64748b', fontWeight: isAns ? 700 : 400 }),
 }
 
 function getAnswerLabels(choices, qType) {
@@ -22,6 +29,11 @@ export default function QuestionGroup({ group, keyword }) {
   const { year, subject, question_number, question_text, question_type, choices } = group
   const ansLabels = getAnswerLabels(choices, question_type)
   const kw = keyword?.toLowerCase()
+
+  // final_choices: {str_num → "ㄱ,ㄴ"} for multi-select, {} for single
+  const finalChoices = choices[0]?.final_choices || {}
+  const answerNum = choices[0]?.answer_num
+  const hasFinalChoices = Object.keys(finalChoices).length > 0
 
   const highlight = (text) => {
     if (!kw || !text?.toLowerCase().includes(kw)) return text
@@ -49,7 +61,26 @@ export default function QuestionGroup({ group, keyword }) {
           </div>
         )
       })}
-      <div style={s.ansLine}>정답: {ansLabels.join(', ')}</div>
+      {hasFinalChoices && (
+        <>
+          <div style={s.divider} />
+          <div style={s.fcTitle}>번호별 선택지 구성</div>
+          {Object.entries(finalChoices).sort((a, b) => Number(a[0]) - Number(b[0])).map(([num, jamos]) => {
+            const isAns = String(answerNum) === num
+            return (
+              <div key={num} style={s.fcRow(isAns)}>
+                <span style={s.fcLabel}>{CIRC[Number(num)] || num + '.'}</span>
+                <span style={s.fcText(isAns)}>{jamos}{isAns ? ' ← 정답' : ''}</span>
+              </div>
+            )
+          })}
+        </>
+      )}
+      <div style={s.ansLine}>
+        {hasFinalChoices
+          ? `정답: ${CIRC[answerNum] || answerNum + '번'} (${finalChoices[String(answerNum)] || ''})`
+          : `정답: ${ansLabels.join(', ')}`}
+      </div>
     </div>
   )
 }

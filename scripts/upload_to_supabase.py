@@ -34,9 +34,27 @@ def post(endpoint, batch):
         print(f"  오류 {e.code}: {e.read().decode()[:200]}")
         return e.code
 
+def delete_all():
+    """기존 데이터 전체 삭제"""
+    req = urllib.request.Request(
+        f"{URL}/rest/v1/ox_items?id=neq.00000000-0000-0000-0000-000000000000",
+        headers={
+            "apikey": KEY,
+            "Authorization": f"Bearer {KEY}",
+            "Content-Type": "application/json",
+        },
+        method="DELETE",
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            print(f"기존 데이터 삭제 완료 (status={r.status})")
+    except urllib.error.HTTPError as e:
+        print(f"삭제 오류 {e.code}: {e.read().decode()[:200]}")
+
 def main():
     with open(DATA_PATH, encoding="utf-8") as f:
         items = json.load(f)
+    delete_all()
     print(f"총 {len(items)}개 업로드 시작...")
     BATCH = 200
     for i in range(0, len(items), BATCH):

@@ -27,7 +27,7 @@ def parse_final_choice(text):
         jamos = [JAMO_LABELS[int(n)-1] for n in nums if 0 < int(n) <= len(JAMO_LABELS)]
     return (num, jamos) if num else None
 
-def find_question_sections(lines, answer_keys):
+def find_question_sections(answer_keys):
     """HTML 파싱 기반으로 모든 OX 아이템 생성"""
     from html_parser import load_parsed_elements
     from extract_questions import make_ox_items, detect_q_type
@@ -51,13 +51,16 @@ def find_question_sections(lines, answer_keys):
             subj = get_subj()
             if year and subj and subj != "자연과학개론":
                 q_num = q_counter
-                ans = answer_keys.get(year, {}).get(subj, {}).get(q_num)
-                if ans:
+                ans_tuple = answer_keys.get(year, {}).get(subj, {}).get(q_num)
+                if ans_tuple:
+                    # HTML 답안: (primary, raw_list) 튜플
+                    ans_num = ans_tuple[0] if isinstance(ans_tuple, tuple) else ans_tuple
                     q_type = detect_q_type(q_text)
                     # 다중선택: choices = final_map (① → [ㄱ,ㄴ] 형식)
                     eff_choices = final_map if sub_choices else choices
+                    fc = final_map if sub_choices else {}
                     items = make_ox_items(year, subj, q_num, q_text, q_type,
-                                          eff_choices, sub_choices, ans)
+                                          eff_choices, sub_choices, ans_num, fc)
                     all_items.extend(items)
         q_text, choices, sub_choices, final_map = None, {}, {}, {}
         sub_idx = 0

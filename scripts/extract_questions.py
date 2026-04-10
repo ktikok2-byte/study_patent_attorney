@@ -22,9 +22,10 @@ def detect_q_type(text):
         return "incorrect"
     return "correct"
 
-def make_ox_items(year, subject, q_num, q_text, q_type, choices, sub_choices, answer_num):
+def make_ox_items(year, subject, q_num, q_text, q_type, choices, sub_choices, answer_num, final_choices=None):
     """선택지 → OX 아이템 목록 생성"""
     items = []
+    fc = final_choices or {}
     if sub_choices:
         # 다중선택: choices = {str(num): "ㄱ,ㄴ"} 형식의 최종선택지
         # answer_num이 가리키는 최종선택지의 ㄱ,ㄴ 조합이 정답 서브선택지
@@ -37,31 +38,32 @@ def make_ox_items(year, subject, q_num, q_text, q_type, choices, sub_choices, an
                 continue
             in_correct = label in correct_jamos
             is_correct = in_correct if q_type in ("multi_correct", "correct") else not in_correct
-            items.append(build_item(year, subject, q_num, q_text, q_type, label, text, is_correct))
+            items.append(build_item(year, subject, q_num, q_text, q_type, label, text, is_correct, answer_num, fc))
     else:
         for label, text in choices.items():
             if not text.strip():
                 continue
             is_answer = (label == str(answer_num))
             is_correct = is_answer if q_type in ("correct", "multi_correct") else not is_answer
-            items.append(build_item(year, subject, q_num, q_text, q_type, label, text, is_correct))
+            items.append(build_item(year, subject, q_num, q_text, q_type, label, text, is_correct, answer_num, fc))
     return items
 
-def build_item(year, subject, q_num, q_text, q_type, label, text, is_correct):
+def build_item(year, subject, q_num, q_text, q_type, label, text, is_correct, answer_num=None, final_choices=None):
     return {
         "id": str(uuid.uuid4()),
         "year": year, "subject": subject,
         "question_number": q_num, "question_text": q_text.strip(),
         "question_type": q_type, "choice_label": label,
-        "choice_text": text.strip(), "is_correct": is_correct
+        "choice_text": text.strip(), "is_correct": is_correct,
+        "answer_num": answer_num,
+        "final_choices": final_choices or {},
     }
 
 def extract_and_save():
-    from extract_data import read_lines, parse_answer_key
+    from parse_html_answers import load_html_answers
     from section_parser import find_question_sections
-    lines = read_lines()
-    answer_keys = parse_answer_key(lines)
-    all_items = find_question_sections(lines, answer_keys)
+    answer_keys = load_html_answers()
+    all_items = find_question_sections(answer_keys)
 
     OUT_PATH.mkdir(parents=True, exist_ok=True)
     out_file = OUT_PATH / "ox_items.json"
