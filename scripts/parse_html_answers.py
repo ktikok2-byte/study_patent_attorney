@@ -86,7 +86,11 @@ def load_html_answers():
             year_positions_raw.append((year, m.start()))
 
     tables = list(re.finditer(r"<table[^>]*>.*?</table>", content, re.DOTALL))
-    result = {}
+
+    # 연도별 답안표 후보를 위치 순서대로 수집
+    # 순서: 1번째=산업재산권법, 2번째=민법개론, 3번째=자연과학개론(무시)
+    SUBJ_ORDER = ["산업재산권법", "민법개론"]
+    year_tables = {}  # {year: [table_raw, ...]}
 
     for m in tables:
         traw = m.group()
@@ -105,23 +109,19 @@ def load_html_answers():
             continue
         current_year = max(prev_years, key=lambda x: x[1])[0]
 
-        # 과목 감지: 표 앞 1000자 디코딩 텍스트
-        ctx_raw = content[max(0, pos - 1000) : pos]
-        ctx = _decode_ctx(ctx_raw)
-        if "산업재산권법" in ctx[-500:]:
-            subj = "산업재산권법"
-        elif "민법개론" in ctx[-500:]:
-            subj = "민법개론"
-        else:
-            continue
-
         answers = _parse_table_answers(traw)
         if len(answers) < 5:
             continue
 
-        result.setdefault(current_year, {})
-        if subj not in result[current_year]:
-            result[current_year][subj] = answers
+        year_tables.setdefault(current_year, []).append(answers)
+
+    # 위치 순서로 과목 배정 (1번=산업재산권법, 2번=민법개론)
+    result = {}
+    for year, ans_list in year_tables.items():
+        result[year] = {}
+        for i, answers in enumerate(ans_list):
+            if i < len(SUBJ_ORDER):
+                result[year][SUBJ_ORDER[i]] = answers
 
     return result
 
