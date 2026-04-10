@@ -51,17 +51,35 @@ def delete_all():
     except urllib.error.HTTPError as e:
         print(f"삭제 오류 {e.code}: {e.read().decode()[:200]}")
 
+EXTRA_FIELDS = {"answer_num", "final_choices"}
+
+def strip_extra(items):
+    """새 컬럼이 아직 없을 때 업로드용으로 제거"""
+    return [{k: v for k, v in item.items() if k not in EXTRA_FIELDS} for item in items]
+
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--full", action="store_true", help="answer_num, final_choices 포함 업로드")
+    args = parser.parse_args()
+
     with open(DATA_PATH, encoding="utf-8") as f:
         items = json.load(f)
+    if not args.full:
+        items = strip_extra(items)
+        print("※ --full 없이 실행: answer_num/final_choices 제외 업로드 (마이그레이션 전)")
+
     delete_all()
     print(f"총 {len(items)}개 업로드 시작...")
     BATCH = 200
+    success = 0
     for i in range(0, len(items), BATCH):
         batch = items[i:i+BATCH]
         status = post("ox_items", batch)
+        if status in (200, 201):
+            success += len(batch)
         print(f"  [{i+len(batch)}/{len(items)}] status={status}")
-    print("완료!")
+    print(f"완료! (성공: {success}/{len(items)})")
 
 if __name__ == "__main__":
     main()

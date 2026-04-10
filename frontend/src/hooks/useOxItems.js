@@ -7,20 +7,18 @@ let _cache = null
 export function useOxItems() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
-  const { user } = useAuth()
 
   useEffect(() => {
-    if (!user) return
     if (_cache) { setItems(_cache); setLoading(false); return }
-
-    supabase.from('ox_items').select('*').order('year', { ascending: false }).then(({ data, error }) => {
-      if (!error && data) {
+    fetch('/data/ox_items.json')
+      .then(r => r.json())
+      .then(data => {
         _cache = data
         setItems(data)
-      }
-      setLoading(false)
-    })
-  }, [user])
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
 
   return { items, loading }
 }
