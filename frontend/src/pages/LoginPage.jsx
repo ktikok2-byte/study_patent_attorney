@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
-const toFakeEmail = (id) => `${id.trim().toLowerCase()}@noemail.local`
+const toFakeEmail = (id) => `${id.trim().toLowerCase()}@id.app`
 
 const s = {
   wrap: { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f7fa' },
