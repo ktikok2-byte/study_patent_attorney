@@ -31,7 +31,7 @@ export function useUserStats() {
 
   const fetchStats = async () => {
     if (!user) return
-    const { data } = await supabase.from('user_stats').select('ox_item_id,correct_count,wrong_count,timeout_count,skip_count').eq('user_id', user.id)
+    const { data } = await supabase.from('user_stats').select('ox_item_id,correct_count,wrong_count,timeout_count,skip_count,error_count,good_count').eq('user_id', user.id)
     if (data) {
       const map = {}
       data.forEach(r => { map[r.ox_item_id] = r })
