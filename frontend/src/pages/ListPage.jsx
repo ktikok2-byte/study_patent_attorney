@@ -8,7 +8,7 @@ import Pagination from '../components/list/Pagination'
 import { PAGE_SIZE } from '../lib/constants'
 import { supabase } from '../lib/supabase'
 
-const DEFAULT_F = { year: '', subject: '', qType: '', onlyBookmarked: false, minCorrect: '', maxCorrect: '', minWrong: '', maxWrong: '', exclCorrect0: false, exclWrong0: false, minError: '', maxError: '', minGood: '', maxGood: '' }
+const DEFAULT_F = { year: '', subject: '', qType: '', keyword: '', onlyBookmarked: false, minCorrect: '', maxCorrect: '', minWrong: '', maxWrong: '', exclCorrect0: false, exclWrong0: false, minError: '', maxError: '', minGood: '', maxGood: '' }
 
 function applyFilters(items, stats, f, bkIds) {
   return items.filter(it => {
@@ -27,6 +27,10 @@ function applyFilters(items, stats, f, bkIds) {
     if (f.maxError !== '' && (st.error_count ?? 0) > +f.maxError) return false
     if (f.minGood !== '' && (st.good_count ?? 0) < +f.minGood) return false
     if (f.maxGood !== '' && (st.good_count ?? 0) > +f.maxGood) return false
+    if (f.keyword) {
+      const kw = f.keyword.toLowerCase()
+      if (!it.question_text?.toLowerCase().includes(kw) && !it.choice_text?.toLowerCase().includes(kw)) return false
+    }
     return true
   })
 }

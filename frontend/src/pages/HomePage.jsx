@@ -15,6 +15,7 @@ const s = {
 const MENU = [
   { icon: '📋', title: '문제 목록', desc: '필터로 문제를 선택하고\n학습을 시작하세요', path: '/list' },
   { icon: '⚡', title: '자동학습', desc: '틀린 문제부터 자동으로\n순서를 정해 학습합니다', path: '/study' },
+  { icon: '🔍', title: '문제 전체 보기', desc: '문제·선택지·정답을\n한눈에 확인합니다', path: '/review' },
   { icon: '⚙️', title: '설정', desc: '통계 초기화, 북마크\n목록을 관리합니다', path: '/settings' },
 ]
 

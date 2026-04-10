@@ -20,6 +20,7 @@ export default function Navbar() {
       <Link to="/" style={s.brand}>변리사 OX</Link>
       <Link to="/list" style={s.link(pathname === '/list')}>문제목록</Link>
       <Link to="/study" style={s.link(pathname === '/study')}>자동학습</Link>
+      <Link to="/review" style={s.link(pathname === '/review')}>전체보기</Link>
       <Link to="/settings" style={s.link(pathname === '/settings')}>설정</Link>
       <button style={s.btn} onClick={handleSignOut}>로그아웃</button>
     </nav>

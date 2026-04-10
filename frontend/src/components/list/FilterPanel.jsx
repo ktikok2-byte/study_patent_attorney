@@ -10,12 +10,16 @@ const s = {
   sep: { fontSize: 12, color: '#94a3b8' },
 }
 
-const DEFAULT = { year: '', subject: '', qType: '', onlyBookmarked: false, minCorrect: '', maxCorrect: '', minWrong: '', maxWrong: '', exclCorrect0: false, exclWrong0: false, minError: '', maxError: '', minGood: '', maxGood: '' }
+const DEFAULT = { year: '', subject: '', qType: '', keyword: '', onlyBookmarked: false, minCorrect: '', maxCorrect: '', minWrong: '', maxWrong: '', exclCorrect0: false, exclWrong0: false, minError: '', maxError: '', minGood: '', maxGood: '' }
+export { DEFAULT as DEFAULT_FILTER }
 
-export default function FilterPanel({ filters: f, setFilters }) {
+export default function FilterPanel({ filters: f, setFilters, simple }) {
   const set = (k, v) => setFilters({ ...f, [k]: v })
   return (
     <div style={s.panel}>
+      <div style={s.row}>
+        <input style={{ ...s.sel, minWidth: 180, flex: 1 }} type="text" placeholder="키워드 검색 (문제·선택지)" value={f.keyword ?? ''} onChange={e => set('keyword', e.target.value)} />
+      </div>
       <div style={s.row}>
         <select style={s.sel} value={f.year} onChange={e => set('year', e.target.value ? +e.target.value : '')}>
           <option value="">전체 연도</option>
@@ -41,7 +45,7 @@ export default function FilterPanel({ filters: f, setFilters }) {
         <span style={s.sep}>~</span>
         <input style={s.num} type="number" min={0} placeholder="최대" value={f.maxWrong} onChange={e => set('maxWrong', e.target.value)} />
       </div>
-      <div style={s.row}>
+      {!simple && <div style={s.row}>
         <span style={s.label}>오류:</span>
         <input style={s.num} type="number" min={0} placeholder="최소" value={f.minError} onChange={e => set('minError', e.target.value)} />
         <span style={s.sep}>~</span>
@@ -50,12 +54,12 @@ export default function FilterPanel({ filters: f, setFilters }) {
         <input style={s.num} type="number" min={0} placeholder="최소" value={f.minGood} onChange={e => set('minGood', e.target.value)} />
         <span style={s.sep}>~</span>
         <input style={s.num} type="number" min={0} placeholder="최대" value={f.maxGood} onChange={e => set('maxGood', e.target.value)} />
-      </div>
-      <div style={s.row}>
+      </div>}
+      {!simple && <div style={s.row}>
         <label style={s.label}><input type="checkbox" checked={f.exclCorrect0} onChange={e => set('exclCorrect0', e.target.checked)} /> 정답0회 제외</label>
         <label style={s.label}><input type="checkbox" checked={f.exclWrong0} onChange={e => set('exclWrong0', e.target.checked)} /> 오답0회 제외</label>
         <label style={s.label}><input type="checkbox" checked={f.onlyBookmarked} onChange={e => set('onlyBookmarked', e.target.checked)} /> 북마크만</label>
-      </div>
+      </div>}
     </div>
   )
 }

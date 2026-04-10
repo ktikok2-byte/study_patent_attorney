@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage'
 import ListPage from './pages/ListPage'
 import StudyPage from './pages/StudyPage'
 import SettingsPage from './pages/SettingsPage'
+import ReviewPage from './pages/ReviewPage'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/list" element={<ListPage />} />
         <Route path="/study" element={<StudyPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/review" element={<ReviewPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
