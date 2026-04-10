@@ -25,7 +25,7 @@ export default function HomePage() {
   return (
     <div style={s.wrap}>
       <div style={s.title}>변리사 OX학습</div>
-      <div style={s.sub}>{user?.email} 님, 환영합니다</div>
+      <div style={s.sub}>{user?.email?.replace(/@id\.app$/, '')} 님, 환영합니다</div>
       <div style={s.grid}>
         {MENU.map(m => (
           <div key={m.path} style={s.card}
