@@ -92,7 +92,7 @@ export default function StudyPage() {
           {paused ? '▶ 재개' : '⏸ 정지'}
         </button>
       </div>
-      <TimerBar running={!paused && !revealed && oxEnabled} onTimeout={handleTimeout} resetKey={resetKey} />
+      <TimerBar running={!paused && !revealed} onTimeout={handleTimeout} resetKey={resetKey} />
       <StudyCard item={current} index={idx} total={queue.length} stats={stats} />
       <AnswerPanel
         knowPressed={knowPressed} onKnow={handleKnow}
