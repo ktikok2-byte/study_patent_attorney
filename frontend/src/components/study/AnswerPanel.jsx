@@ -32,12 +32,13 @@ export default function AnswerPanel({ knowPressed, onKnow, oxEnabled, onAnswer, 
       <div style={s.oxRow}>
         {['O', 'X'].map(t => {
           const isChosen = revealed && chosenAnswer === t
-          const isCorrect = isChosen && t === correctAnswer
+          // 모르는 문제(chosenAnswer===null)일 때도 정답 버튼 강조
+          const isCorrectHighlight = revealed && t === correctAnswer
           return (
             <button key={t}
-              style={s.oxBtn(t, oxEnabled, isChosen, isCorrect)}
-              disabled={!oxEnabled || (revealed && chosenAnswer !== null)}
-              onClick={() => onAnswer(t)}>
+              style={s.oxBtn(t, oxEnabled || revealed, isChosen || isCorrectHighlight, isCorrectHighlight)}
+              disabled={revealed}
+              onClick={() => !revealed && onAnswer(t)}>
               {t}
             </button>
           )
