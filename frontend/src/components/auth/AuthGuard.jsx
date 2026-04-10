@@ -1,0 +1,9 @@
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
+
+export default function AuthGuard({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>로딩 중...</div>
+  if (!user) return <Navigate to="/login" replace />
+  return children
+}
