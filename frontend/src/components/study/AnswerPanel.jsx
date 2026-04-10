@@ -48,7 +48,7 @@ export default function AnswerPanel({ knowPressed, onKnow, oxEnabled, onAnswer, 
         <div style={{ display: 'flex', gap: 8 }}>
           <div style={{ flex: 1, padding: '10px', borderRadius: 8, textAlign: 'center', background: chosenAnswer === correctAnswer ? '#dcfce7' : '#fee2e2', color: chosenAnswer === correctAnswer ? '#16a34a' : '#dc2626', fontWeight: 700 }}>
             정답: {correctAnswer}&nbsp;
-            {chosenAnswer === null ? '✗ 모르는 문제' : chosenAnswer === correctAnswer ? '✓ 맞았습니다!' : `✗ 오답 (내 선택: ${chosenAnswer})`}
+            {chosenAnswer === null ? '모르는 문제' : chosenAnswer === correctAnswer ? '✓ 맞았습니다!' : `✗ 오답 (내 선택: ${chosenAnswer})`}
           </div>
           <button style={{ ...s.skipBtn, background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', fontWeight: 600 }} onClick={onNext}>다음 →</button>
         </div>
