@@ -20,9 +20,10 @@ const s = {
     return { flex: 1, padding: '18px', fontSize: 26, fontWeight: 900, borderRadius: 10, cursor: enabled ? 'pointer' : 'not-allowed', background: bg, color, border: `2px solid ${border}`, transition: 'all 0.1s' }
   },
   skipBtn: { padding: '8px', borderRadius: 8, fontSize: 13, color: '#64748b', border: '1px solid #e2e8f0', cursor: 'pointer', background: '#fff' },
+  dontKnowBtn: { padding: '12px', borderRadius: 10, fontSize: 15, fontWeight: 700, width: '100%', cursor: 'pointer', background: '#fee2e2', color: '#dc2626', border: '2px solid #fca5a5', transition: 'all 0.15s' },
 }
 
-export default function AnswerPanel({ knowPressed, onKnow, oxEnabled, onAnswer, revealed, chosenAnswer, correctAnswer, onNext, onSkip }) {
+export default function AnswerPanel({ knowPressed, onKnow, oxEnabled, onAnswer, onDontKnow, revealed, chosenAnswer, correctAnswer, onNext, onSkip }) {
   return (
     <div style={s.wrap}>
       <button style={s.knowBtn(knowPressed)} onClick={onKnow} disabled={knowPressed}>
@@ -45,12 +46,18 @@ export default function AnswerPanel({ knowPressed, onKnow, oxEnabled, onAnswer, 
       {revealed && (
         <div style={{ display: 'flex', gap: 8 }}>
           <div style={{ flex: 1, padding: '10px', borderRadius: 8, textAlign: 'center', background: chosenAnswer === correctAnswer ? '#dcfce7' : '#fee2e2', color: chosenAnswer === correctAnswer ? '#16a34a' : '#dc2626', fontWeight: 700 }}>
-            정답: {correctAnswer} {chosenAnswer === correctAnswer ? '✓ 맞았습니다!' : `✗ 오답 (내 선택: ${chosenAnswer})`}
+            정답: {correctAnswer}&nbsp;
+            {chosenAnswer === null ? '✗ 모르는 문제' : chosenAnswer === correctAnswer ? '✓ 맞았습니다!' : `✗ 오답 (내 선택: ${chosenAnswer})`}
           </div>
           <button style={{ ...s.skipBtn, background: '#2563eb', color: '#fff', border: 'none', padding: '10px 20px', fontWeight: 600 }} onClick={onNext}>다음 →</button>
         </div>
       )}
-      {!revealed && <button style={s.skipBtn} onClick={onSkip}>건너뛰기</button>}
+      {!revealed && (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button style={{ ...s.dontKnowBtn, flex: 1 }} onClick={onDontKnow}>모르는 문제</button>
+          <button style={{ ...s.skipBtn, padding: '8px 14px' }} onClick={onSkip}>건너뛰기</button>
+        </div>
+      )}
     </div>
   )
 }

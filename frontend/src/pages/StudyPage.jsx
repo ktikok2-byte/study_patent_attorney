@@ -69,6 +69,13 @@ export default function StudyPage() {
     setRevealed(true)
   }
 
+  const handleDontKnow = async () => {
+    if (revealed || !current) return
+    await recordAnswer(current.id, 'wrong', Date.now() - startTime)
+    await fetchStats()
+    setRevealed(true)
+  }
+
   const handleSkip = async () => {
     if (!current) return
     await recordAnswer(current.id, 'skip', Date.now() - startTime)
@@ -97,7 +104,7 @@ export default function StudyPage() {
       <AnswerPanel
         knowPressed={knowPressed} onKnow={handleKnow}
         oxEnabled={oxEnabled && !paused}
-        onAnswer={handleAnswer} revealed={revealed}
+        onAnswer={handleAnswer} onDontKnow={handleDontKnow} revealed={revealed}
         chosenAnswer={chosenAnswer} correctAnswer={current ? getAnswer(current) : null}
         onNext={handleNext} onSkip={handleSkip}
       />
